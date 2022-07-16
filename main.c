@@ -1,41 +1,45 @@
 #include "monty.h"
 /**
- * main - Monty bytecode interpreter
- * @argc: number of arguments passed
- * @argv: array of argument strings
- * Return: EXIT_SUCCESS on success or EXIT_FAILURE on failure
+ * main - intepreter for Monty ByteCode files
+ * @argc: argument count
+ * @argv: array of argument tokens
+ * Return: always 0
  */
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
-stack_t *stack = NULL;
+FILE *file_ptr;
+char *line_buf = NULL, op_buf[20], val_buf[20];
+ssize_t bytes_read = 0, tokens = 0;
+size_t buf_size = 0;
 unsigned int line_number = 0;
-FILE *fs = NULL;
-char *lineptr = NULL, *op = NULL;
-size_t n = 0;
-var.queue = 0;
-var.stack_len = 0;
-if (argc != 2)
-{
-dprintf(STDOUT_FILENO, "USAGE: monty file\n");
-exit(EXIT_FAILURE);
-}
-fs = fopen(argv[1], "r");
-if (fs == NULL)
-{
-dprintf(STDOUT_FILENO, "Error: Can't open file %s\n", argv[1]);
-exit(EXIT_FAILURE);
-}
-on_exit(free_lineptr, &lineptr);
-on_exit(free_stack, &stack);
-on_exit(m_fs_close, fs);
-while (getline(&lineptr, &n, fs) != -1)
+stack_t *stack = NULL;
+if (argc != 2 || !argv[1])
+usage_error();
+stack_val.qu = 0;
+stack_val.file = argv[1];
+file_ptr = fopen(stack_val.file, "r");
+if (!file_ptr)
+	file_error();
+while ((bytes_read = getline(&line_buf, &buf_size, file_ptr)) != -1)
 {
 line_number++;
-op = strtok(lineptr, "\n\t\r ");
-if (op != NULL && op[0] != '#')
+tokens = sscanf(line_buf, "%s %s", op_buf, val_buf);
+if (tokens > 2)
 {
-get_op(op, &stack, line_number);
+free(line_buf);
+usage_error();
 }
+free(line_buf);
+line_buf = NULL;
+stack_val.opcode = op_buf;
+stack_val.n = val_buf;
+if (tokens > 0 && stack_val.opcode[0] != '#')
+get_op_func(stack_val.opcode)(&stack, line_number);
+memset(op_buf, '\0', sizeof(op_buf));
+memset(val_buf, '\0', sizeof(val_buf));
 }
-exit(EXIT_SUCCESS);
+free(line_buf);
+free_stack(&stack);
+fclose(file_ptr);
+return (0);
 }

@@ -1,33 +1,17 @@
-#ifndef _MONTY_H_
-#define _MONTY_H_
-
-#include <stdlib.h>
+#ifndef __MONTY_H__
+#define __MONTY_H__
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <stdlib.h>
 #include <unistd.h>
-
-/**
- * struct var_s - struct to contain the main variables of the Monty interpreter
- * @queue: flag to determine if in stack vs queue mode
- * @stack_len: length of the stack
- */
-typedef struct var_s
-{
-int queue;
-size_t stack_len;
-} var_t;
-#define STACK 0
-#define QUEUE 1
-extern var_t var;
+#include <string.h>
+#include <ctype.h>
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
  * @n: integer
  * @prev: points to the previous element of the stack (or queue)
  * @next: points to the next element of the stack (or queue)
  * Description: doubly linked list node structure
+ * for stack, queues, LIFO, FIFO Holberton project
  */
 typedef struct stack_s
 {
@@ -35,39 +19,47 @@ int n;
 struct stack_s *prev;
 struct stack_s *next;
 } stack_t;
-/**
- * struct instruction_s - opcoode and its function
- * @opcode: the opcode
- * @f: function to handle the opcode
- * Description: opcode and its function
- */
 typedef struct instruction_s
 {
 char *opcode;
 void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
+void (*get_op_func(char *str))(stack_t **stack, unsigned int line_number);
+void free_stack(stack_t **stack);
+void op_push(stack_t **stack, unsigned int line_number);
+void op_pall(stack_t **stack, unsigned int line_number);
+void op_pint(stack_t **stack, unsigned int line_number);
+void op_pop(stack_t **stack, unsigned int line_number);
+void op_swap(stack_t **stack, unsigned int line_number);
+void op_add(stack_t **stack, unsigned int line_number);
+void op_nop(stack_t **stack, unsigned int line_number);
+void op_sub(stack_t **stack, unsigned int line_number);
+void op_div(stack_t **stack, unsigned int line_number);
+void op_mul(stack_t **stack, unsigned int line_number);
+void op_mod(stack_t **stack, unsigned int line_number);
+void op_pchar(stack_t **stack, unsigned int line_number);
+void file_error(void);
+void usage_error(void);
+void malloc_error(stack_t **stack);
+void opcode_error(stack_t **stack, unsigned int line_number);
+void push_error(stack_t **stack, unsigned int line_number);
+void pint_error(stack_t **stack, unsigned int line_number);
+void pop_error(stack_t **stack, unsigned int line_number);
+void swap_error(stack_t **stack, unsigned int line_number);
+void add_error(stack_t **stack, unsigned int line_number);
+void sub_error(stack_t **stack, unsigned int line_number);
+void div_error(stack_t **stack, unsigned int line_number);
+void zero_error(stack_t **stack, unsigned int line_number);
+void mul_error(stack_t **stack, unsigned int line_number);
+void mod_error(stack_t **stack, unsigned int line_number);
+void pchar_error(stack_t **stack, unsigned int line_number);
+void char_error(stack_t **stack, unsigned int line_number);
 
-void get_op(char *op, stack_t **stack, unsigned int line_number);
-void m_push(stack_t **stack, unsigned int line_number);
-void m_push2(stack_t **stack, int n);
-void m_pall(stack_t **stack, unsigned int line_number);
-void m_pint(stack_t **stack, unsigned int line_number);
-void m_pop(stack_t **stack, unsigned int line_number);
-void m_swap(stack_t **stack, unsigned int line_number);
-void m_add(stack_t **stack, unsigned int line_number);
-void m_nop(stack_t **stack, unsigned int line_number);
-void m_sub(stack_t **stack, unsigned int line_number);
-void m_mul(stack_t **stack, unsigned int line_number);
-void m_div(stack_t **stack, unsigned int line_number);
-void m_mod(stack_t **stack, unsigned int line_number);
-void rotl(stack_t **stack, unsigned int line_number);
-void rotr(stack_t **stack, unsigned int line_number);
-void m_stack(stack_t **stack, unsigned int line_number);
-void m_queue(stack_t **stack, unsigned int line_number);
-void m_pchar(stack_t **stack, unsigned int line_number);
-void m_pstr(stack_t **stack, unsigned int line_number);
-void free_stack(int status, void *arg);
-void m_fs_close(int status, void *arg);
-void free_lineptr(int status, void *arg);
-stack_t *add_node(stack_t **stack, const int n);
+struct stack_val
+{
+char *n;
+char *file;
+char *opcode;
+int qu;
+} stack_val;
 #endif
